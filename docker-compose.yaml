@@ -11,6 +11,8 @@ services:
       - "3306:3306"
     volumes:
       - db:/var/lib/mysql
+    networks:
+      - network1
   client:
     depends_on:
       - db
@@ -21,6 +23,9 @@ services:
       - "8080:80"
     volumes:
       - client:/client
+    networks:
+      - network1
+      - network2
   server:
     depends_on:
       - db
@@ -40,9 +45,14 @@ services:
       - server:/server
     stdin_open: true
     tty: true
+    networks:
+      - network1
 volumes:
   client: {}
   server: {}
   db: {}
-#networks:
-#  default:
+networks:
+  network1:
+    internal: true
+  network2:
+    internal: false
