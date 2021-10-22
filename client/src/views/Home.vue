@@ -1,5 +1,5 @@
 <template>
-  <div>
-      <p>Zuko-Webpanel</p>
-  </div>
+    <div>
+        <p>Zuko-Webpanel</p>
+    </div>
 </template>
