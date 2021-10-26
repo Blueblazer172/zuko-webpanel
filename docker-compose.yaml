@@ -11,27 +11,22 @@ services:
       - "3306:3306"
     volumes:
       - db:/var/lib/mysql
-    networks:
-      - network1
   client:
     depends_on:
       - db
     build: ./client
-    restart: on-failure
+    restart: always
     env_file: ./.env
     ports:
       - "8080:80"
     volumes:
       - client:/client
-    networks:
-      - network1
-      - network2
   server:
     depends_on:
       - db
       - client
     build: ./server
-    restart: on-failure
+    restart: always
     env_file: ./.env
     environment:
       - DB_HOST=db
@@ -45,14 +40,7 @@ services:
       - server:/server
     stdin_open: true
     tty: true
-    networks:
-      - network1
 volumes:
   client: {}
   server: {}
   db: {}
-networks:
-  network1:
-    internal: true
-  network2:
-    internal: false
