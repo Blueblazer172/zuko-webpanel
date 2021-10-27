@@ -3,6 +3,8 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+require('dotenv').config();
+
 const corsOptions = {
     origin: 'http://localhost:8080',
     optionsSuccessStatus: 200
