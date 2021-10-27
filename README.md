@@ -16,3 +16,11 @@ war. Der Systemadmin kann über ein Webinterface auf den Zutrittsverlauf zugreif
 Set Environment Variables in `.env`
 
 `docker-compose up -d`
+
+## IMPORTANT
+copy .env inside each folder (server/client)
+
+`copy .env server/`
+
+`copy .env client/`
+

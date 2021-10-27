@@ -4,6 +4,7 @@ services:
   reverse-proxy:
     image: nginx:1.17.10
     container_name: reverse_proxy_zuko
+    restart: always
     depends_on:
       - db
       - zuko-client
@@ -20,6 +21,8 @@ services:
     restart: always
     ports:
       - "33006:80"
+    env_file:
+      - .env
     environment:
       - PMA_ARBITRARY=1
       - PMA_HOST=db
@@ -29,8 +32,9 @@ services:
 
   db:
     image: mysql:8.0.27
-    restart: unless-stopped
-    env_file: ./.env
+    restart: always
+    env_file:
+      - .env
     environment:
       - MYSQL_ROOT_PASSWORD=$MYSQL_PASSWORD
       - MYSQL_DATABASE=$MYSQL_DATABASE
@@ -43,7 +47,8 @@ services:
     build:
       context: ./client
     restart: always
-    env_file: ./.env
+    env_file:
+      - .env
     environment:
       - VUE_APP_DOMAIN_NAME=$VUE_APP_DOMAIN_NAME
     depends_on:
@@ -60,7 +65,8 @@ services:
       - "3000:3000"
     depends_on:
       - db
-    env_file: ./.env
+    env_file:
+      - .env
     environment:
       - DB_HOST=db
       - DB_USER=root
@@ -68,7 +74,7 @@ services:
       - DB_NAME=$MYSQL_DATABASE
       - DB_PORT=$MYSQL_PORT
       - DOMAIN_NAME=$VUE_APP_DOMAIN_NAME
-    restart: on-failure
+    restart: always
     stdin_open: true
     tty: true
 
