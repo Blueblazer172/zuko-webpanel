@@ -17,7 +17,7 @@ export default {
     },
     methods: {
         async getFromApiEndpoint() {
-            await this.$http.get('http://localhost:3000/api').then((res) => {
+            await this.$http.get('https://'+ process.env.VUE_APP_DOMAIN_NAME +'/api').then((res) => {
                 this.text = res.data
                 this.status = res.status
             })

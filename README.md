@@ -9,3 +9,18 @@ Wenn ein Nutzer eine Berechtigung benötigt, kann er diese über die App beim Sy
 ebenfalls gestattet werden. Zutritte zu jedem Raum sollen mindestens mit Namen, Personalnummer und Zeitstempel erfasst
 und bis zu 30 Tage auf einem Server abgelegt werden. In der App soll jeder einsehen können, in welchen Räumen er zuletzt
 war. Der Systemadmin kann über ein Webinterface auf den Zutrittsverlauf zugreifen und Berechtigungen erteilen.
+
+### Installation
+`copy .env.example .env`
+
+Set Environment Variables in `.env`
+
+`docker-compose up -d`
+
+## IMPORTANT
+copy .env inside each folder (server/client)
+
+`copy .env server/`
+
+`copy .env client/`
+
