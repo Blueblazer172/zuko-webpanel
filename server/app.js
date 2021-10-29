@@ -11,7 +11,7 @@ const User = db.user;
 const Role = db.role;
 
 const corsOptions = {
-    origin: 'http://localhost:8080',
+    origin: process.env.CORS_BACKEND_SERVER_URL || 'http://localhost:8080',
     optionsSuccessStatus: 200
 }
 
@@ -33,7 +33,7 @@ if (process.env.RE_SYNC === "always") {
 
 require('./routes/auth.routes')(app);
 require("./routes/user.routes")(app);
-
+require("./routes/test.routes")(app);
 
 // @TODO add error handling
 

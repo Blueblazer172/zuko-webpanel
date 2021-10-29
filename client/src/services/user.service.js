@@ -1,7 +1,13 @@
 import axios from 'axios';
 import authHeader from './auth-header';
 
-const API_URL = `${process.env.VUE_APP_BACKEND}/api/test/`;
+let API_URL = '';
+if (process.env.VUE_APP_IS_LOCAL_DEV === "true") {
+    API_URL = `${process.env.VUE_APP_BACKEND}/api/test/`;
+} else {
+    API_URL = `/api/test/`;
+}
+
 class UserService {
     getPublicContent() {
         return axios.get(API_URL + 'all');

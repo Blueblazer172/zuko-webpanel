@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_URL = `${process.env.VUE_APP_BACKEND}/api/auth/`;
+let API_URL = '';
+if (process.env.VUE_APP_IS_LOCAL_DEV === "true") {
+    API_URL = `${process.env.VUE_APP_BACKEND}/api/auth/`;
+} else {
+    API_URL = `/api/auth/`;
+}
 
 class AuthService {
     login(user) {

@@ -50,6 +50,7 @@ services:
       - .env
     environment:
       - VUE_APP_BACKEND=$BACKEND
+      - VUE_APP_IS_LOCAL_DEV=$IS_LOCAL_DEV
     depends_on:
       - api-server
     ports:
