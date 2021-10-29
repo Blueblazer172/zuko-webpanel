@@ -28,7 +28,6 @@ services:
       - PMA_HOST=db
       - PMA_USER=root
       - PMA_PASSWORD=$MYSQL_PASSWORD
-      - PMA_ABSOLUTE_URI=http://localhost:80/phpmyadmin/
 
   db:
     image: mysql:8.0.27
@@ -50,7 +49,7 @@ services:
     env_file:
       - .env
     environment:
-      - VUE_APP_DOMAIN_NAME=$VUE_APP_DOMAIN_NAME
+      - VUE_APP_BACKEND=$BACKEND
     depends_on:
       - api-server
     ports:
@@ -68,12 +67,12 @@ services:
     env_file:
       - .env
     environment:
-      - DB_HOST=db
+      - DB_HOST=$DB_HOST
       - DB_USER=root
       - DB_PASSWORD=$MYSQL_PASSWORD
       - DB_NAME=$MYSQL_DATABASE
       - DB_PORT=$MYSQL_PORT
-      - DOMAIN_NAME=$VUE_APP_DOMAIN_NAME
+      - RE_SYNC=$RE_SYNC
     restart: always
     stdin_open: true
     tty: true
