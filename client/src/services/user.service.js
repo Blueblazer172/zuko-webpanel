@@ -19,7 +19,7 @@ class UserService {
         return axios.get(API_URL + 'admin', { headers: authHeader() });
     }
     getLogs(userId) {
-        return axios.get(`${process.env.VUE_APP_BACKEND}/api/user/${userId}/` + 'log', { headers: authHeader() });
+        return axios.get(`${process.env.VUE_APP_BACKEND}api/user/${userId}/` + 'log', { headers: authHeader() });
     }
 }
 
