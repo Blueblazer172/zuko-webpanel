@@ -9,6 +9,8 @@ require('dotenv').config();
 const db = require("./models");
 const User = db.user;
 const Role = db.role;
+const Room = db.room;
+const Log = db.log;
 
 const corsOptions = {
     origin: process.env.CORS_BACKEND_SERVER_URL || 'http://localhost:8080',
@@ -48,14 +50,66 @@ function initial() {
         name: "admin"
     });
 
+    Role.create({
+        id: 3,
+        name: "zimmer1"
+    });
+
+    Role.create({
+        id: 4,
+        name: "zimmer2"
+    });
+
+    Room.create({
+        id: 1,
+        name: "Zimmer 1",
+        neededRoleToAccess: "ROLE_ZIMMER1"
+    }).then((room) => {
+        room.setLogs([1]);
+        room.setLogs([3]);
+    });
+
+    Room.create({
+        id: 2,
+        name: "Zimmer 2",
+        neededRoleToAccess: "ROLE_ZIMMER2"
+    }).then((room) => {
+        room.setLogs([2]);
+    });
+
+    Log.create({
+        id: 1
+    });
+
+    Log.create({
+        id: 2
+    });
+
+    Log.create({
+        id: 3
+    });
+
     User.create({
         name: "admin",
         username: "admin",
         email: "admin@zuko.app",
-        password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'admin1234', 8),
-    }).then(user => {
+        password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'Admin1234', 8),
+    }).then(async user => {
         // set admin role to user
-        user.setRoles([2])
+        user.setRoles([2]);
+        user.setLogs([3]);
+    });
+
+    User.create({
+        name: "test",
+        username: "test",
+        email: "test@zuko.app",
+        password: bcrypt.hashSync('Test1234', 8),
+    }).then(user => {
+        // set user role to user
+        user.setRoles([1]);
+        user.setLogs([1]);
+        user.setLogs([2]);
     });
 }
 

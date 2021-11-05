@@ -1,5 +1,7 @@
 const db = require("../models");
 const User = db.user;
+const Log = db.log;
+const Room = db.room;
 
 exports.create = (req, res) => {
     let errors = []
@@ -77,7 +79,7 @@ exports.update = (req, res) => {
     const id = req.params.id;
 
     User.update(req.body, {
-        where: { id: id }
+        where: {id: id}
     })
         .then(num => {
             if (num == 1) {
@@ -101,7 +103,7 @@ exports.delete = (req, res) => {
     const id = req.params.id;
 
     User.destroy({
-        where: { id: id }
+        where: {id: id}
     })
         .then(num => {
             if (num == 1) {
@@ -127,12 +129,72 @@ exports.deleteAll = (req, res) => {
         truncate: false
     })
         .then(nums => {
-            res.send({ message: `${nums} User were deleted successfully!` });
+            res.send({message: `${nums} User were deleted successfully!`});
         })
         .catch(err => {
             res.status(500).send({
                 message:
                     err.message || "Some error occurred while removing all users."
+            });
+        });
+};
+exports.findLogs = (req, res) => {
+    const id = req.params.id;
+
+    User.findAll({
+        attributes: {
+            exclude: ['password', 'email', 'name', 'id', 'createdAt', 'updatedAt', 'username'],
+        },
+        include: [{
+            model: Log,
+            attributes: {
+                include: [['createdAt', 'created']],
+                exclude: ['id', 'updatedAt']
+            },
+            include: [{
+                model: Room,
+                attributes: {
+                    include: [['name', 'roomName']],
+                    exclude: ['createdAt', 'updatedAt', 'logId', 'roomId']
+                }
+            }]
+        }],
+        where: {
+            id: id
+        },
+        raw: true
+    })
+        .then(data => {
+            if (data) {
+                let filtered = [];
+                for (const item of data) {
+                    const mapping = {
+                        'logs.created': "created",
+                        'logs.rooms.roomName': "roomName",
+                    };
+
+                    // MAGIC START
+                    const filteredData = Object.keys(item)
+                        .filter((key => mapping.hasOwnProperty(key)))
+                        .reduce((acc, key) => {
+                            acc[mapping[key]] = item[key];
+                            return acc;
+                        }, {});
+                    // MAGIC END
+                    filtered.push(filteredData)
+                }
+
+                res.send(filtered);
+            } else {
+                res.status(404).send({
+                    message: `Cannot find Log for User with id=${id}.`
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).send({
+                message: "Error retrieving Log for User with id=" + id
             });
         });
 };
