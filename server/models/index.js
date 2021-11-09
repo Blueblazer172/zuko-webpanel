@@ -59,6 +59,17 @@ db.room.belongsToMany(db.log, {
     otherKey: "logId"
 });
 
-db.ROLES = ["admin", "user", "zimmer1", "zimmer2"];
+db.room.belongsToMany(db.role, {
+    through: "room_roles",
+    foreignKey: "roomId",
+    otherKey: "roleId"
+});
+db.role.belongsToMany(db.room, {
+    through: "room_roles",
+    foreignKey: "roleId",
+    otherKey: "roomId"
+});
+
+db.ROLES = ["admin", "user"];
 
 module.exports = db;
