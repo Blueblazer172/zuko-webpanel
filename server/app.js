@@ -5,7 +5,7 @@ const logger = require('morgan');
 const cors = require('cors');
 const bcrypt = require("bcryptjs");
 require('dotenv').config();
-
+const port = process.env.PORT;
 const db = require("./models");
 const User = db.user;
 const Role = db.role;
@@ -36,8 +36,11 @@ if (process.env.RE_SYNC === "always") {
 require('./routes/auth.routes')(app);
 require("./routes/user.routes")(app);
 require("./routes/test.routes")(app);
+require("./routes/permission.routes")(app);
 
-// @TODO add error handling
+app.listen(port, () => {
+    console.log(`Zuko app listening at http://localhost:${port}`)
+});
 
 function initial() {
     Role.create({
@@ -52,41 +55,33 @@ function initial() {
 
     Role.create({
         id: 3,
-        name: "zimmer1"
+        name: "hausmeister"
     });
 
     Role.create({
         id: 4,
-        name: "zimmer2"
+        name: "reinigungskraft"
     });
 
     Room.create({
         id: 1,
-        name: "Zimmer 1",
-        neededRoleToAccess: "ROLE_ZIMMER1"
+        name: "101",
     }).then((room) => {
-        room.setLogs([1]);
-        room.setLogs([3]);
+        room.setRoles([4])
     });
 
     Room.create({
         id: 2,
-        name: "Zimmer 2",
-        neededRoleToAccess: "ROLE_ZIMMER2"
+        name: "102",
     }).then((room) => {
-        room.setLogs([2]);
+        room.setRoles([3,4])
     });
-
-    Log.create({
-        id: 1
-    });
-
-    Log.create({
-        id: 2
-    });
-
-    Log.create({
-        id: 3
+    
+    Room.create({
+        id: 3,
+        name: "103",
+    }).then((room) => {
+        room.setRoles([4])
     });
 
     User.create({
@@ -94,10 +89,27 @@ function initial() {
         username: "admin",
         email: "admin@zuko.app",
         password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'Admin1234', 8),
-    }).then(async user => {
+    }).then(user => {
         // set admin role to user
         user.setRoles([2]);
-        user.setLogs([3]);
+    });
+
+    User.create({
+        name: "Hans Hausmeister",
+        username: "hans",
+        email: "hans@zuko.app",
+        password: bcrypt.hashSync('hausmeister', 8),
+    }).then(user => {
+        user.setRoles([3]);
+    });
+
+    User.create({
+        name: "Anna",
+        username: "anna",
+        email: "anna@zuko.app",
+        password: bcrypt.hashSync('anna', 8),
+    }).then(async user => {
+        user.setRoles([4]);
     });
 
     User.create({
@@ -105,11 +117,8 @@ function initial() {
         username: "test",
         email: "test@zuko.app",
         password: bcrypt.hashSync('Test1234', 8),
-    }).then(user => {
-        // set user role to user
-        user.setRoles([1]);
-        user.setLogs([1]);
-        user.setLogs([2]);
+    }).then(async user => {
+        user.setRoles([4,3]);
     });
 }
 
