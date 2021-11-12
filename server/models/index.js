@@ -49,12 +49,12 @@ db.user.belongsToMany(db.log, {
 });
 
 db.log.belongsToMany(db.room, {
-    through: "user_rooms",
+    through: "room_logs",
     foreignKey: "logId",
     otherKey: "roomId"
 });
 db.room.belongsToMany(db.log, {
-    through: "user_rooms",
+    through: "room_logs",
     foreignKey: "roomId",
     otherKey: "logId"
 });

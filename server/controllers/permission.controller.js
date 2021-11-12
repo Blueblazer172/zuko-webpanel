@@ -54,11 +54,11 @@ exports.checkPermission = (req, res) => {
                     .then(() => {
                         Log.create().then((log) => {
                             User.findByPk(id).then((user) => {
-                                user.setLogs([log.id]);
+                                log.setUsers([user.id]);
                             });
 
                             Room.findOne({ where: { name: roomName } }).then((room) => {
-                                room.setLogs([log.id]);
+                                log.setRooms([room.id]);
                             });
                         })
                         res.send("Permission granted");
