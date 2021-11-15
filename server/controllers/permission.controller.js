@@ -8,8 +8,10 @@ const Role = db.role;
 const Log = db.log;
 
 exports.checkPermission = (req, res) => {
+    let device = "";
     const id = parseInt(req.body.id);
     const roomName = req.body.room;
+
     Room.findAll({
         where: {
             name: roomName,
@@ -45,10 +47,15 @@ exports.checkPermission = (req, res) => {
         },
     })
         .then((user) => {
+            if (roomName == "102"){
+                device = "http://192.168.178.89:4444/toggle"
+            } else {
+                device = "http://192.168.178.94:8080/user"
+            }
             if (user.length > 0) {
                 axios({
                     method: "post",
-                    url: process.env.OUTPUT_DEVICE_API,
+                    url: device,
                     data: user,
                 })
                     .then(() => {
@@ -69,10 +76,20 @@ exports.checkPermission = (req, res) => {
                         });
                     });
             } else {
+                axios({
+                    method: "post",
+                    url: device,
+                })
+                .catch(function (error) {
+                    res.status(404).send({
+                        message: "Endpoint device unreachable",
+                    });
+                });
                 res.send("Permission denied");
             }
         })
         .catch((err) => {
+            console.log(err)
             res.status(500).send({
                 message: "Error fetching permissions for user: " + id,
             });
