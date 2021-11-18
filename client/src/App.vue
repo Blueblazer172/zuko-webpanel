@@ -1,12 +1,13 @@
 <template>
     <div id="app">
-        <nav class="navbar navbar-expand navbar-dark bg-dark">
-            <a href="/" class="navbar-brand">Zuko-Webpanel</a>
+        <nav class="navbar navbar-expand navbar-dark bg-primary">
+            <a href="/" class="navbar-brand">
+                <img src="icon.png" width="30" height="30" alt="">
+                Zuko
+            </a>
             <div class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <router-link to="/home" class="nav-link">
-                        <font-awesome-icon icon="home" /> Home
-                    </router-link>
+                    <router-link to="/home" class="nav-link">Home</router-link>
                 </li>
                 <li v-if="showAdminBoard" class="nav-item">
                     <router-link to="/admin" class="nav-link">Verwalten</router-link>

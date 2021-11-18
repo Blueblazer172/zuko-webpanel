@@ -1,7 +1,7 @@
 <template>
     <div class="container mt-3">
         <header class="jumbotron">
-            <h3>{{ content }}</h3>
+            <h3>{{ content ?? "Loading..." }}</h3>
             <div>
                 <ul v-for="(logData, index) in logs" :key="index">
                     <li>Log {{ index }}</li>

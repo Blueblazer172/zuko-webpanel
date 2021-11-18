@@ -2,6 +2,7 @@ const db = require("../models");
 const User = db.user;
 const Log = db.log;
 const Room = db.room;
+const Role = db.role;
 
 exports.create = (req, res) => {
     let errors = []
@@ -43,9 +44,52 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-    User.findAll()
-        .then(data => {
-            res.send(data);
+    User.findAll({
+        attributes: {
+            exclude: ['password', 'createdAt', 'updatedAt', 'username'],
+        },
+        include: [{
+            model: Role,
+            include: [{
+                model: Room
+            }]
+        }],
+        raw: true
+    })
+        .then(users => {
+            let retUsers = [];
+            let filteredArray = users.filter(function (itm) {
+                if (retUsers.indexOf(itm.id) === -1) {
+                    let roles = [];
+                    let rooms = [];
+
+                    retUsers.push({
+                        id: itm.id,
+                        name: itm.name,
+                        roles: roles.push({role: users['roles.name']}),
+                        rooms: rooms.push({role: users['roles.rooms.name']}),
+                    });
+
+                    return retUsers;
+                } else {
+                    let filteredRetUserRoles = retUsers.filter((user) => {
+                        return user.id === itm.id;
+                    })[0].roles;
+
+                    filteredRetUserRoles.push(users['roles.name']);
+
+                    let filteredRetUserRooms = retUsers.filter((user) => {
+                        return user.id === itm.id;
+                    })[0].rooms;
+
+                    filteredRetUserRooms.push(users['roles.rooms.name']);
+
+                    return retUsers;
+                }
+            });
+
+            console.log(retUsers)
+            res.send(users);
         })
         .catch(err => {
             res.status(500).send({
