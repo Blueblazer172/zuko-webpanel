@@ -5,7 +5,27 @@
                 <header><h3>Verwaltungspanel</h3></header>
             </div>
         </div>
-        <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Rollen</th>
+                <th scope="col">Räume</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="user in users" :key="user.id">
+                <th scope="row">1</th>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ user.room }}</td>
+                </tr>
+
+            </tbody>
+        </table>
+        <!-- <div class="row">
             <div class="col">
                 <h4>Name</h4>
             </div>
@@ -19,7 +39,7 @@
                 <h4>Räume</h4>
             </div>
         </div>
-        <div class="row" v-for="user in users" :key="user.id">
+            <div class="row" v-for="user in users" :key="user.id">
             <div class="col">
                 <span>{{ user.name }}</span>
             </div>
@@ -27,12 +47,12 @@
                 <span>{{ user.email }}</span>
             </div>
             <div class="col">
-                <span>{{ user.roles }}</span>
+                <span>{{ user.role }}</span>
             </div>
             <div class="col">
-                <span>{{ user.rooms }}</span>
+                <span>{{ user.room }}</span>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 

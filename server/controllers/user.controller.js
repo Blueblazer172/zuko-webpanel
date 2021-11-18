@@ -57,39 +57,27 @@ exports.findAll = (req, res) => {
         raw: true
     })
         .then(users => {
-            let retUsers = [];
-            let filteredArray = users.filter(function (itm) {
-                if (retUsers.indexOf(itm.id) === -1) {
-                    let roles = [];
-                    let rooms = [];
-
-                    retUsers.push({
-                        id: itm.id,
-                        name: itm.name,
-                        roles: roles.push({role: users['roles.name']}),
-                        rooms: rooms.push({role: users['roles.rooms.name']}),
-                    });
-
-                    return retUsers;
-                } else {
-                    let filteredRetUserRoles = retUsers.filter((user) => {
-                        return user.id === itm.id;
-                    })[0].roles;
-
-                    filteredRetUserRoles.push(users['roles.name']);
-
-                    let filteredRetUserRooms = retUsers.filter((user) => {
-                        return user.id === itm.id;
-                    })[0].rooms;
-
-                    filteredRetUserRooms.push(users['roles.rooms.name']);
-
-                    return retUsers;
+            let arr = {}
+            users.forEach((user) => {
+                if (user['id'] in arr){
+                    if (!arr[user['id']]['role'].includes(user['roles.name'])){
+                        arr[user['id']]['role'].push(user['roles.name'])
+                    }
+                    if (!arr[user['id']]['room'].includes(user['roles.rooms.name'])){
+                        arr[user['id']]['room'].push(user['roles.rooms.name'])
+                    }
                 }
-            });
-
-            console.log(retUsers)
-            res.send(users);
+                else {
+                    arr[user['id']]=
+                    {
+                        name: user['name'],
+                        email: user['email'],
+                        role: [user['roles.name']],
+                        room: [user['roles.rooms.name']]
+                    }
+                }    
+            })
+            res.send(arr)
         })
         .catch(err => {
             res.status(500).send({
