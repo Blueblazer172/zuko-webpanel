@@ -17,6 +17,8 @@
         <ul>
             <li v-for="role in currentUser.roles" :key="role">{{role}}</li>
         </ul>
+
+        <button type="button" class="btn btn-primary" @click="updateProfile(currentUser.id)">Profil Aktualisieren</button>
     </div>
 </template>
 
@@ -31,6 +33,11 @@ export default {
     mounted() {
         if (!this.currentUser) {
             this.$router.push('/login');
+        }
+    },
+    methods: {
+        updateProfile(id) {
+            return this.$router.push('/user/' + id);
         }
     }
 };

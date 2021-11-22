@@ -1,57 +1,88 @@
 <template>
     <div id="app">
-        <nav class="navbar navbar-expand navbar-dark bg-dark">
-            <a href="/" class="navbar-brand">Zuko-Webpanel</a>
+        <nav class="navbar navbar-expand navbar-dark bg-primary">
+            <a href="/" class="navbar-brand">
+                <img src="icon.png" width="30" height="30" alt="">
+                Zuko
+            </a>
             <div class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <router-link to="/home" class="nav-link">
-                        <font-awesome-icon icon="home" /> Home
-                    </router-link>
-                </li>
-                <li v-if="showAdminBoard" class="nav-item">
-                    <router-link to="/admin" class="nav-link">Verwalten</router-link>
-                </li>
-                <li class="nav-item">
-                    <router-link v-if="currentUser" to="/user" class="nav-link">User</router-link>
-                </li>
+                <router-link v-if="!showAdminBoard" v-slot="{href,navigate, isActive}" to="/home" class="nav-item">
+                    <li :class="isActive ? 'nav-link active' : 'nav-link'">
+                        <NavLink :href="href" @click="navigate">Home</NavLink>
+                    </li>
+                </router-link>
+                <router-link v-if="showAdminBoard" v-slot="{href,navigate, isActive}" to="/admin" class="nav-item">
+                    <li :class="isActive ? 'nav-link active' : 'nav-link'">
+                        <NavLink :href="href" @click="navigate">Users</NavLink>
+                    </li>
+                </router-link>
+                <router-link v-if="showAdminBoard" v-slot="{href,navigate, isActive}" to="/roles" class="nav-item">
+                    <li :class="isActive ? 'nav-link active' : 'nav-link'">
+                        <NavLink :href="href" @click="navigate">Rollen</NavLink>
+                    </li>
+                </router-link>
+                <router-link v-if="showAdminBoard" v-slot="{href,navigate, isActive}" to="/rooms" class="nav-item">
+                    <li :class="isActive ? 'nav-link active' : 'nav-link'">
+                        <NavLink :href="href" @click="navigate">Räume</NavLink>
+                    </li>
+                </router-link>
             </div>
 
             <div v-if="!currentUser" class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <router-link to="/register" class="nav-link">
-                        <font-awesome-icon icon="user-plus" /> Sign Up
-                    </router-link>
-                </li>
-                <li class="nav-item">
-                    <router-link to="/login" class="nav-link">
-                        <font-awesome-icon icon="sign-in-alt" /> Login
-                    </router-link>
-                </li>
+                <router-link v-slot="{href,navigate, isActive}" to="/register" class="nav-item">
+                    <li :class="isActive ? 'nav-link active' : 'nav-link'">
+                        <NavLink :href="href" @click="navigate">
+                            <font-awesome-icon icon="user-plus"/>
+                            Sign Up
+                        </NavLink>
+                    </li>
+                </router-link>
+                <router-link v-slot="{href,navigate, isActive}" to="/login" class="nav-item">
+                    <li :class="isActive ? 'nav-link active' : 'nav-link'">
+                        <NavLink :href="href" @click="navigate">
+                            <font-awesome-icon icon="sign-in-alt"/>
+                            Login
+                        </NavLink>
+                    </li>
+                </router-link>
             </div>
 
             <div v-if="currentUser" class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <router-link to="/profile" class="nav-link">
-                        <font-awesome-icon icon="user" />
-                        {{ currentUser.username }}
-                    </router-link>
-                </li>
+                <router-link v-slot="{href,navigate, isActive}" to="/profile" class="nav-item">
+                    <li :class="isActive ? 'nav-link active' : 'nav-link'">
+                        <NavLink :href="href" @click="navigate">
+                            <font-awesome-icon icon="user"/>
+                            {{ currentUser.username }}
+                        </NavLink>
+                    </li>
+                </router-link>
                 <li class="nav-item">
                     <a class="nav-link" @click.prevent="logOut">
-                        <font-awesome-icon icon="sign-out-alt" /> LogOut
+                        <font-awesome-icon icon="sign-out-alt"/>
+                        LogOut
                     </a>
                 </li>
             </div>
         </nav>
 
         <div class="container">
-            <router-view />
+            <router-view/>
         </div>
     </div>
 </template>
-
+<style scoped>
+a:hover {
+    color: unset;
+    text-decoration: none;
+}
+</style>
 <script>
+import { RouterLink } from 'vue-router';
+
 export default {
+    props: {
+        ...RouterLink.props
+    },
     computed: {
         currentUser() {
             return this.$store.state.auth.user;

@@ -5,6 +5,9 @@ import Register from '../views/Register.vue';
 import Profile from "../views/loggedin/Profile";
 import Admin from "../views/loggedin/Admin";
 import User from "../views/loggedin/User";
+import UserManagement from "../views/loggedin/UserManagement";
+import Rooms from "../views/loggedin/Rooms";
+import Roles from "../views/loggedin/Roles";
 
 const routes = [
   {
@@ -27,20 +30,32 @@ const routes = [
   {
     path: "/profile",
     name: "profile",
-    // lazy-loaded
     component: Profile,
   },
   {
     path: "/admin",
     name: "admin",
-    // lazy-loaded
     component: Admin,
   },
   {
-    path: "/user",
+    path: "/user/:id/",
     name: "user",
-    // lazy-loaded
     component: User,
+  },
+  {
+    path: "/user/:id/mgmt",
+    name: "userManagement",
+    component: UserManagement,
+  },
+  {
+    path: "/roles",
+    name: "roleManagement",
+    component: Roles,
+  },
+  {
+    path: "/rooms",
+    name: "roomManagement",
+    component: Rooms,
   },
 ];
 
@@ -55,7 +70,7 @@ router.beforeEach((to, from, next) => {
   const loggedIn = localStorage.getItem('user');
 
   if (authRequired && !loggedIn) {
-    next('/login');
+    next('/home');
   } else {
     next();
   }

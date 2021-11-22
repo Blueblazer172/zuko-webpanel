@@ -11,7 +11,6 @@ module.exports = app => {
         next();
     });
 
-    // router.post("/", [authJwt.verifyToken], permission.checkPermission);
-    router.post("/", permission.checkPermission);
+    router.post("/", [authJwt.verifyToken], permission.checkPermission);
     app.use('/api/permission', router);
 };

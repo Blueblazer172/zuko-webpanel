@@ -2,6 +2,7 @@ const db = require("../models");
 const User = db.user;
 const Log = db.log;
 const Room = db.room;
+const Role = db.role;
 
 exports.create = (req, res) => {
     let errors = []
@@ -43,9 +44,45 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-    User.findAll()
-        .then(data => {
-            res.send(data);
+    User.findAll({
+        attributes: {
+            exclude: ['password', 'createdAt', 'updatedAt', 'username'],
+        },
+        include: [{
+            model: Role,
+            include: [{
+                model: Room
+            }]
+        }],
+        order: [
+            ['id', 'DESC']
+        ],
+        raw: true
+    })
+        .then(users => {
+            let arr = {};
+            users.forEach((user) => {
+                if (user['id'] in arr) {
+                    if (!arr[user['id']]['roles'].includes(user['roles.name'])) {
+                        arr[user['id']]['roles'].push(user['roles.name']);
+                    }
+
+                    if (!arr[user['id']]['rooms'].includes(user['roles.rooms.name'])) {
+                        arr[user['id']]['rooms'].push(user['roles.rooms.name']);
+                    }
+                } else {
+                    arr[user['id']] =
+                        {
+                            id: user['id'],
+                            name: user['name'],
+                            email: user['email'],
+                            roles: [user['roles.name']],
+                            rooms: [user['roles.rooms.name']]
+                        }
+                }
+            });
+
+            res.send(arr);
         })
         .catch(err => {
             res.status(500).send({
