@@ -54,30 +54,35 @@ exports.findAll = (req, res) => {
                 model: Room
             }]
         }],
+        order: [
+            ['id', 'DESC']
+        ],
         raw: true
     })
         .then(users => {
-            let arr = {}
+            let arr = {};
             users.forEach((user) => {
-                if (user['id'] in arr){
-                    if (!arr[user['id']]['role'].includes(user['roles.name'])){
-                        arr[user['id']]['role'].push(user['roles.name'])
+                if (user['id'] in arr) {
+                    if (!arr[user['id']]['roles'].includes(user['roles.name'])) {
+                        arr[user['id']]['roles'].push(user['roles.name']);
                     }
-                    if (!arr[user['id']]['room'].includes(user['roles.rooms.name'])){
-                        arr[user['id']]['room'].push(user['roles.rooms.name'])
+
+                    if (!arr[user['id']]['rooms'].includes(user['roles.rooms.name'])) {
+                        arr[user['id']]['rooms'].push(user['roles.rooms.name']);
                     }
+                } else {
+                    arr[user['id']] =
+                        {
+                            id: user['id'],
+                            name: user['name'],
+                            email: user['email'],
+                            roles: [user['roles.name']],
+                            rooms: [user['roles.rooms.name']]
+                        }
                 }
-                else {
-                    arr[user['id']]=
-                    {
-                        name: user['name'],
-                        email: user['email'],
-                        role: [user['roles.name']],
-                        room: [user['roles.rooms.name']]
-                    }
-                }    
-            })
-            res.send(arr)
+            });
+
+            res.send(arr);
         })
         .catch(err => {
             res.status(500).send({

@@ -85,6 +85,7 @@ function initial() {
     });
 
     User.create({
+        id: 1,
         name: "admin",
         username: "admin",
         email: "admin@zuko.app",
@@ -95,6 +96,7 @@ function initial() {
     });
 
     User.create({
+        id: 2,
         name: "Hans Hausmeister",
         username: "hans",
         email: "hans@zuko.app",
@@ -104,6 +106,7 @@ function initial() {
     });
 
     User.create({
+        id: 3,
         name: "Anna",
         username: "anna",
         email: "anna@zuko.app",
@@ -113,6 +116,7 @@ function initial() {
     });
 
     User.create({
+        id: 4,
         name: "test",
         username: "test",
         email: "test@zuko.app",

@@ -2,59 +2,39 @@
     <div class="container-fluid mt-3">
         <div class="row">
             <div class="col">
-                <header><h3>Verwaltungspanel</h3></header>
+                <header><h3>Verwaltungspanel User</h3></header>
             </div>
         </div>
         <table class="table">
             <thead>
-                <tr>
+            <tr>
+                <th scope="col">Id</th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
                 <th scope="col">Rollen</th>
                 <th scope="col">Räume</th>
-                </tr>
+            </tr>
             </thead>
             <tbody>
-                <tr v-for="user in users" :key="user.id">
-                <th scope="row">1</th>
+            <tr class="userrow" v-for="user in users" :key="user.id" @click="manageUser(user.id)">
+                <th scope="row">{{ user.id }}</th>
                 <td>{{ user.name }}</td>
                 <td>{{ user.email }}</td>
-                <td>{{ user.role }}</td>
-                <td>{{ user.room }}</td>
-                </tr>
+                <td>{{ user.roles[0] != null ? user.roles.sort().join(', ') : 'Keine Rollen' }}</td>
+                <td>{{ user.rooms[0] != null ? user.rooms.sort().join(', ') : 'Keine Räume' }}</td>
+            </tr>
 
             </tbody>
         </table>
-        <!-- <div class="row">
-            <div class="col">
-                <h4>Name</h4>
-            </div>
-            <div class="col">
-                <h4>Email</h4>
-            </div>
-            <div class="col">
-                <h4>Rolle</h4>
-            </div>
-            <div class="col">
-                <h4>Räume</h4>
-            </div>
-        </div>
-            <div class="row" v-for="user in users" :key="user.id">
-            <div class="col">
-                <span>{{ user.name }}</span>
-            </div>
-            <div class="col">
-                <span>{{ user.email }}</span>
-            </div>
-            <div class="col">
-                <span>{{ user.role }}</span>
-            </div>
-            <div class="col">
-                <span>{{ user.room }}</span>
-            </div>
-        </div> -->
     </div>
 </template>
+
+<style scoped>
+.userrow:hover {
+    background-color: lightgrey;
+    cursor: pointer;
+}
+</style>
 
 <script>
 import UserService from "../../services/user.service";
@@ -67,11 +47,16 @@ export default {
         };
     },
     mounted() {
-        UserService.getUserInformation().then(
+        UserService.getUsers().then(
             (response) => {
                 this.users = response.data;
             }
         );
     },
+    methods: {
+        manageUser(id) {
+            return this.$router.push('/user/' + id + '/mgmt');
+        }
+    }
 };
 </script>

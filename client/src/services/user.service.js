@@ -12,18 +12,21 @@ class UserService {
     getPublicContent() {
         return axios.get(API_URL + 'all');
     }
-    getUserBoard() {
-        return axios.get(API_URL + 'user', { headers: authHeader() });
-    }
-    getAdminBoard() {
-        return axios.get(API_URL + 'admin', { headers: authHeader() });
-    }
+
     getLogs(userId) {
-        return axios.get(`${process.env.VUE_APP_BACKEND}/api/user/${userId}/` + 'log', { headers: authHeader() });
+        return axios.get(`${process.env.VUE_APP_BACKEND}/api/user/${userId}/` + 'log', {headers: authHeader()});
     }
-    getUserInformation() {
-        return axios.get(`${process.env.VUE_APP_BACKEND}/api/user/`, { headers: authHeader() });
+
+    getUserInformation(id) {
+        return axios.get(`${process.env.VUE_APP_BACKEND}/api/user/` + id, {headers: authHeader()});
     }
+
+    getUsers() {
+        return axios.get(`${process.env.VUE_APP_BACKEND}/api/user/`, {headers: authHeader()});
+    }
+
+    getRoles() {}
+    getRooms() {}
 }
 
 export default new UserService();
