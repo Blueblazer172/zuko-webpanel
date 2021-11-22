@@ -10,10 +10,9 @@ const db = require("./models");
 const User = db.user;
 const Role = db.role;
 const Room = db.room;
-const Log = db.log;
 
 const corsOptions = {
-    origin: process.env.CORS_BACKEND_SERVER_URL || 'http://localhost:8080',
+    origin: '*',
     optionsSuccessStatus: 200
 }
 
@@ -37,6 +36,8 @@ require('./routes/auth.routes')(app);
 require("./routes/user.routes")(app);
 require("./routes/test.routes")(app);
 require("./routes/permission.routes")(app);
+require("./routes/role.routes")(app);
+require("./routes/room.routes")(app);
 
 app.listen(port, () => {
     console.log(`Zuko app listening at http://localhost:${port}`)
@@ -74,9 +75,9 @@ function initial() {
         id: 2,
         name: "102",
     }).then((room) => {
-        room.setRoles([3,4])
+        room.setRoles([3, 4])
     });
-    
+
     Room.create({
         id: 3,
         name: "103",
@@ -89,10 +90,10 @@ function initial() {
         name: "admin",
         username: "admin",
         email: "admin@zuko.app",
-        password: bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'Admin1234', 8),
+        password: bcrypt.hashSync('admin', 8),
     }).then(user => {
         // set admin role to user
-        user.setRoles([2]);
+        user.setRoles([2, 3]);
     });
 
     User.create({
@@ -100,9 +101,7 @@ function initial() {
         name: "Hans Hausmeister",
         username: "hans",
         email: "hans@zuko.app",
-        password: bcrypt.hashSync('hausmeister', 8),
-    }).then(user => {
-        user.setRoles([3]);
+        password: bcrypt.hashSync('hans', 8)
     });
 
     User.create({
@@ -110,9 +109,7 @@ function initial() {
         name: "Anna",
         username: "anna",
         email: "anna@zuko.app",
-        password: bcrypt.hashSync('anna', 8),
-    }).then(async user => {
-        user.setRoles([4]);
+        password: bcrypt.hashSync('anna', 8)
     });
 
     User.create({
@@ -120,9 +117,7 @@ function initial() {
         name: "test",
         username: "test",
         email: "test@zuko.app",
-        password: bcrypt.hashSync('Test1234', 8),
-    }).then(async user => {
-        user.setRoles([4,3]);
+        password: bcrypt.hashSync('test', 8)
     });
 }
 

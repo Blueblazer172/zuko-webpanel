@@ -43,7 +43,7 @@ const routes = [
     component: User,
   },
   {
-    path: "/user/:id/mgmt",
+    path: "/user/management/:id/",
     name: "userManagement",
     component: UserManagement,
   },

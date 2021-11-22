@@ -88,8 +88,7 @@ exports.checkPermission = (req, res) => {
                 res.send("Permission denied");
             }
         })
-        .catch((err) => {
-            console.log(err)
+        .catch(() => {
             res.status(500).send({
                 message: "Error fetching permissions for user: " + id,
             });

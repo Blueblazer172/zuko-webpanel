@@ -55,7 +55,7 @@ export default {
     },
     methods: {
         manageUser(id) {
-            return this.$router.push('/user/' + id + '/mgmt');
+            return this.$router.push('/user/management/' + id);
         }
     }
 };
