@@ -70,6 +70,17 @@ db.role.belongsToMany(db.room, {
     otherKey: "roomId"
 });
 
+db.user.belongsToMany(db.room, {
+    through: "user_rooms",
+    foreignKey: "userId",
+    otherKey: "roomId"
+});
+db.room.belongsToMany(db.user, {
+    through: "user_rooms",
+    foreignKey: "roomId",
+    otherKey: "userId"
+});
+
 db.ROLES = ["admin", "user"];
 
 module.exports = db;

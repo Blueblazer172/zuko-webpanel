@@ -1,8 +1,21 @@
 <template>
     <div class="container-fluid mt-3">
         <div class="row">
-            <div class="col">
+            <div class="col-12">
                 <header><h3>Verwaltungspanel Rollen</h3></header>
+                <hr>
+            </div>
+            <div class="col-3">
+                <label for="newRole" class="form-label">Neue Rolle anlegen</label>
+                <input type="text" class="form-control" id="newRole" ref="newRole">
+            </div>
+            <div class="col-3">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-primary form-control" @click="createRole(this.$refs.newRole.value)">Hinzufügen</button>
+            </div>
+            <div class="col-12 mt-3">
+                <hr>
+                <h3>Rollen</h3>
             </div>
         </div>
         <table class="table">
@@ -13,9 +26,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="userrow" v-for="user in users" :key="user.id" @click="manageUser(user.id)">
-                    <th scope="row">{{ user.id }}</th>
-                    <td>{{ user.name }}</td>
+                <tr class="rolerow" v-for="role in roles" :key="role.id" @click="manageRole(role.id)">
+                    <th scope="row">{{ role.id }}</th>
+                    <td>{{ role.name }}</td>
                 </tr>
             </tbody>
         </table>
@@ -23,32 +36,38 @@
 </template>
 
 <style scoped>
-.userrow:hover {
+.rolerow:hover {
     background-color: lightgrey;
     cursor: pointer;
 }
 </style>
 
 <script>
-// import UserService from "../../services/user.service";
+import RoleService from "../../services/role.service";
 
 export default {
     name: "Roles",
     data() {
         return {
-            users: null,
+            roles: null,
         };
     },
     mounted() {
-        // UserService.getRoles().then(
-        //     (response) => {
-        //         this.roles = response.data;
-        //     }
-        // );
+        RoleService.getRoles().then(
+            (response) => {
+                this.roles = response.data;
+            }
+        );
     },
     methods: {
-        manageUser(id) {
-            return this.$router.push('/role/' + id + '/mgmt');
+        manageRole(id) {
+            return this.$router.push('/role/' + id);
+        },
+        createRole(newRoleName) {
+            if (newRoleName) {
+                newRoleName = newRoleName.toLowerCase();
+                RoleService.createRole(newRoleName);
+            }
         }
     }
 };

@@ -218,6 +218,7 @@ exports.findLogs = (req, res) => {
                             return acc;
                         }, {});
                     // MAGIC END
+
                     filtered.push(filteredData)
                 }
 
@@ -229,7 +230,6 @@ exports.findLogs = (req, res) => {
             }
         })
         .catch(err => {
-            console.log(err)
             res.status(500).send({
                 message: "Error retrieving Log for User with id=" + id
             });
@@ -246,4 +246,106 @@ exports.userBoard = (req, res) => {
 
 exports.adminBoard = (req, res) => {
     res.status(200).send("Dieser Text ist für alle Admins sichtbar.");
+};
+
+exports.roles = (req, res) => {
+    const id = req.params.id;
+
+    User.findAll({
+        where: {id: id},
+        exclude: ['password', 'email', 'name', 'id', 'createdAt', 'updatedAt', 'username'],
+        include: [{
+            model: Role,
+            exclude: [ 'id', 'createdAt', 'updatedAt'],
+        }],
+        raw: true
+    }).then((user) => {
+        let retRoles = [];
+        user.forEach((item) => {
+            retRoles.push(item['roles.name'])
+        });
+
+        res.send(retRoles);
+    })
+    .catch(() => {
+        res.status(500).send({
+            message: "Error retrieving Roles for User with id=" + id
+        });
+    });
+};
+
+exports.rooms = (req, res) => {
+    const id = req.params.id;
+
+    User.findAll({
+        where: {id: id},
+        exclude: ['password', 'email', 'name', 'id', 'createdAt', 'updatedAt', 'username'],
+        include: [{
+            model: Room,
+            exclude: [ 'id', 'createdAt', 'updatedAt'],
+        }],
+        raw: true
+    }).then((user) => {
+        let retRooms = [];
+        user.forEach((item) => {
+            retRooms.push(item['rooms.name'])
+        });
+
+        res.send(retRooms);
+    })
+    .catch(() => {
+        res.status(500).send({
+            message: "Error retrieving Rooms for User with id=" + id
+        });
+    });
+};
+
+exports.updateRooms = (req, res) => {
+    const id = req.params.id;
+    const rooms = req.body.rooms;
+
+    User.findByPk(id).then((user) => {
+        rooms.forEach((room) => {
+            Room.findAll({
+                where: {
+                    name: room
+                },
+                raw: true
+            }).then((room) => {
+                user.setRooms([room[0].id])
+            })
+        });
+
+        res.send(rooms);
+    })
+    .catch(() => {
+        res.status(500).send({
+            message: "Error setting Rooms for User with id=" + id
+        });
+    });
+};
+
+exports.updateRoles = (req, res) => {
+    const id = req.params.id;
+    const roles = req.body.roles;
+
+    User.findByPk(id).then((user) => {
+        roles.forEach((role) => {
+            Role.findAll({
+                where: {
+                    name: role
+                },
+                raw: true
+            }).then((role) => {
+                user.setRoles([role[0].id])
+            })
+        });
+
+        res.send(roles);
+    })
+    .catch(() => {
+        res.status(500).send({
+            message: "Error setting Rooms for User with id=" + id
+        });
+    });
 };
