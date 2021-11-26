@@ -23,6 +23,29 @@ class RoomService {
             router.go(0);
         })
     }
+
+    deleteRoom(roomId) {
+        axios({
+            url: `${process.env.VUE_APP_BACKEND}/api/room/` + roomId,
+            headers: authHeader(),
+            method: 'DELETE',
+        }).then(() => {
+            router.go(0);
+        })
+    }
+
+    updateRoom(roomId, roomName) {
+        axios({
+            url: `${process.env.VUE_APP_BACKEND}/api/room/` + roomId,
+            headers: authHeader(),
+            method: 'PUT',
+            data: {
+                name: roomName
+            }
+        }).then(() => {
+            router.go(0);
+        })
+    }
 }
 
 export default new RoomService();

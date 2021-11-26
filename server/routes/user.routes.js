@@ -22,5 +22,6 @@ module.exports = app => {
     router.post("/rooms/:id/", user.updateRooms);
     router.get("/roles/:id/", user.roles);
     router.post("/roles/:id/", user.updateRoles);
+    router.get("/verify/:id/", (req, res) => {res.send("Token valid")})
     app.use('/api/user', [authJwt.verifyToken], router);
 };
