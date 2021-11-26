@@ -1,5 +1,6 @@
 const db = require("../models");
 const Role = db.role;
+const Room = db.room;
 
 exports.create = (req, res) => {
     const role = {
@@ -113,4 +114,25 @@ exports.deleteAll = (req, res) => {
                     err.message || "Some error occurred while removing all roles."
             });
         });
+};
+exports.roleRooms = (req, res) => {
+    Role.findAll({
+        include: [{
+            model: Room
+        }],
+    }).then((roles) => {
+        let rolesRoomes = []
+        roles.forEach((role) => {
+            let rooms = []
+            role.dataValues.rooms.forEach((room) => {
+                rooms.push(room.dataValues.name)
+            })
+            rolesRoomes.push({
+                id: role.id,
+                name: role.name,
+                rooms: rooms
+            })
+        })
+        res.send(rolesRoomes)
+    })
 };

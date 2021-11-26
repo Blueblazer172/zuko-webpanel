@@ -23,12 +23,14 @@
                 <tr>
                     <th scope="col">Id</th>
                     <th scope="col">Name</th>
+                    <th scope="col">Räume</th>
                 </tr>
             </thead>
             <tbody>
                 <tr class="rolerow" v-for="role in roles" :key="role.id" @click="manageRole(role.id)">
                     <th scope="row">{{ role.id }}</th>
                     <td>{{ role.name }}</td>
+                    <td>{{ (role.rooms.join(',').length !== 0) ? role.rooms.join(',') : "Keine Räume" }}</td>
                 </tr>
             </tbody>
         </table>
