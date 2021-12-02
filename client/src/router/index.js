@@ -6,6 +6,7 @@ import Profile from "../views/loggedin/Profile";
 import Admin from "../views/loggedin/Admin";
 import User from "../views/loggedin/User";
 import UserManagement from "../views/loggedin/UserManagement";
+import RoleManagement from "../views/loggedin/RoleManagement";
 import Rooms from "../views/loggedin/Rooms";
 import Roles from "../views/loggedin/Roles";
 
@@ -49,12 +50,17 @@ const routes = [
   },
   {
     path: "/roles",
-    name: "roleManagement",
+    name: "roles",
     component: Roles,
   },
   {
+    path: "/role/management/:id/",
+    name: "roleManagement",
+    component: RoleManagement,
+  },
+  {
     path: "/rooms",
-    name: "roomManagement",
+    name: "rooms",
     component: Rooms,
   },
 ];

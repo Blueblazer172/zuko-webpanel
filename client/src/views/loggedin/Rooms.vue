@@ -31,7 +31,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="room in rooms" :key="room.id" @click="updateRoom(room)" :id="room.id">
+            <tr class="roomsrows" v-for="room in rooms" :key="room.id" @click="updateRoom(room)" :id="room.id">
                 <th scope="row">{{ room.id }}</th>
                 <td>{{ room.name }}</td>
             </tr>
@@ -42,6 +42,11 @@
 
 <style scoped>
 .roomsrow {
+    background-color: lightgrey;
+    cursor: pointer;
+}
+
+.roomsrows:hover {
     background-color: lightgrey;
     cursor: pointer;
 }

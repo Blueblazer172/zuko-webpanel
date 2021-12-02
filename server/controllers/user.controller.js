@@ -1,4 +1,5 @@
 const db = require("../models");
+const bcrypt = require("bcryptjs");
 const User = db.user;
 const Log = db.log;
 const Room = db.room;
@@ -47,44 +48,26 @@ exports.findAll = (req, res) => {
     User.findAll({
         attributes: {
             exclude: ['password', 'createdAt', 'updatedAt', 'username'],
-        },
-        include: [{
-            model: Role,
-            include: [{
-                model: Room
-            }]
-        }],
-        order: [
-            ['id', 'DESC']
-        ],
-        raw: true
+        }
     })
-        .then(users => {
-            let arr = {};
-            users.forEach((user) => {
-                if (user['id'] in arr) {
-                    if (!arr[user['id']]['roles'].includes(user['roles.name'])) {
-                        arr[user['id']]['roles'].push(user['roles.name']);
-                    }
+        .then(async users => {
+            let usersWithRoomsAndRoles = [];
 
-                    if (!arr[user['id']]['rooms'].includes(user['roles.rooms.name'])) {
-                        arr[user['id']]['rooms'].push(user['roles.rooms.name']);
-                    }
-                } else {
-                    arr[user['id']] =
-                        {
-                            id: user['id'],
-                            name: user['name'],
-                            email: user['email'],
-                            roles: [user['roles.name']],
-                            rooms: [user['roles.rooms.name']]
-                        }
-                }
-            });
+            for (let i = 0; i < users.length; i++) {
+                let userRoles = await users[i].getRoles({raw: true});
+                let userRooms = await users[i].getRooms({raw: true});
 
-            res.send(arr);
+                usersWithRoomsAndRoles.push({
+                    user: users[i].dataValues,
+                    userRoles: userRoles,
+                    userRooms: userRooms
+                });
+            }
+
+            res.send(usersWithRoomsAndRoles);
         })
         .catch(err => {
+            console.log(err)
             res.status(500).send({
                 message:
                     err.message || "Some error occurred while retrieving users."
@@ -115,7 +98,13 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
     const id = req.params.id;
 
-    User.update(req.body, {
+    let user = req.body;
+
+    if (req.body.password) {
+        user = {...user, password: bcrypt.hashSync(req.body.password, 8)}
+    }
+
+    User.update(user, {
         where: {id: id}
     })
         .then(num => {
@@ -256,7 +245,7 @@ exports.roles = (req, res) => {
         exclude: ['password', 'email', 'name', 'id', 'createdAt', 'updatedAt', 'username'],
         include: [{
             model: Role,
-            exclude: [ 'id', 'createdAt', 'updatedAt'],
+            exclude: ['id', 'createdAt', 'updatedAt'],
         }],
         raw: true
     }).then((user) => {
@@ -267,11 +256,11 @@ exports.roles = (req, res) => {
 
         res.send(retRoles);
     })
-    .catch(() => {
-        res.status(500).send({
-            message: "Error retrieving Roles for User with id=" + id
+        .catch(() => {
+            res.status(500).send({
+                message: "Error retrieving Roles for User with id=" + id
+            });
         });
-    });
 };
 
 exports.rooms = (req, res) => {
@@ -282,7 +271,7 @@ exports.rooms = (req, res) => {
         exclude: ['password', 'email', 'name', 'id', 'createdAt', 'updatedAt', 'username'],
         include: [{
             model: Room,
-            exclude: [ 'id', 'createdAt', 'updatedAt'],
+            exclude: ['id', 'createdAt', 'updatedAt'],
         }],
         raw: true
     }).then((user) => {
@@ -293,59 +282,63 @@ exports.rooms = (req, res) => {
 
         res.send(retRooms);
     })
-    .catch(() => {
-        res.status(500).send({
-            message: "Error retrieving Rooms for User with id=" + id
+        .catch(() => {
+            res.status(500).send({
+                message: "Error retrieving Rooms for User with id=" + id
+            });
         });
-    });
 };
 
 exports.updateRooms = (req, res) => {
     const id = req.params.id;
     const rooms = req.body.rooms;
 
-    User.findByPk(id).then((user) => {
+    User.findByPk(id).then(async (user) => {
+        await user.setRooms([]);
+
         rooms.forEach((room) => {
             Room.findAll({
                 where: {
                     name: room
                 },
                 raw: true
-            }).then((room) => {
-                user.setRooms([room[0].id])
-            })
+            }).then(async (room) => {
+                await user.setRooms([room[0].id]);
+            });
         });
 
         res.send(rooms);
     })
-    .catch(() => {
-        res.status(500).send({
-            message: "Error setting Rooms for User with id=" + id
+        .catch(() => {
+            res.status(500).send({
+                message: "Error setting Rooms for User with id=" + id
+            });
         });
-    });
 };
 
 exports.updateRoles = (req, res) => {
     const id = req.params.id;
     const roles = req.body.roles;
 
-    User.findByPk(id).then((user) => {
+    User.findByPk(id).then(async (user) => {
+        await user.setRoles([]);
+
         roles.forEach((role) => {
             Role.findAll({
                 where: {
                     name: role
                 },
                 raw: true
-            }).then((role) => {
-                user.setRoles([role[0].id])
-            })
+            }).then(async (role) => {
+                await user.addRoles([role[0].id]);
+            });
         });
 
         res.send(roles);
     })
-    .catch(() => {
-        res.status(500).send({
-            message: "Error setting Rooms for User with id=" + id
+        .catch(() => {
+            res.status(500).send({
+                message: "Error setting Rooms for User with id=" + id
+            });
         });
-    });
 };

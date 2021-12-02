@@ -16,12 +16,24 @@
             </tr>
             </thead>
             <tbody>
-            <tr class="userrow" v-for="user in users" :key="user.id" @click="manageUser(user.id)">
-                <th scope="row">{{ user.id }}</th>
-                <td>{{ user.name }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.roles[0] != null ? user.roles.sort().join(', ') : 'Keine Rollen' }}</td>
-                <td>{{ user.rooms[0] != null ? user.rooms.sort().join(', ') : 'Keine Räume' }}</td>
+            <tr class="userrow" v-for="user in users" :key="user.user.id" @click="manageUser(user.user.id)">
+                <th scope="row">{{ user.user.id }}</th>
+                <td>{{ user.user.name }}</td>
+                <td>{{ user.user.email }}</td>
+
+                <td v-if="user.userRoles.length > 0">
+                    <span>{{ formatName(user.userRoles) }}</span>
+                </td>
+                <td v-else>
+                    <span>Keine Rollen</span>
+                </td>
+
+                <td v-if="user.userRooms.length > 0">
+                    <span>{{ formatName(user.userRooms) }}</span>
+                </td>
+                <td v-else>
+                    <span>Keine Räume</span>
+                </td>
             </tr>
 
             </tbody>
@@ -56,6 +68,19 @@ export default {
     methods: {
         manageUser(id) {
             return this.$router.push('/user/management/' + id);
+        },
+        formatName(rolesRooms) {
+            let retString = '';
+
+            for (let i = 0; i < rolesRooms.length; i++) {
+                if ((i < (rolesRooms.length - 1))) {
+                    retString += rolesRooms[i].name + ', '
+                } else {
+                    retString += rolesRooms[i].name
+                }
+            }
+
+            return retString
         }
     }
 };

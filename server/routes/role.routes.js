@@ -18,5 +18,7 @@ module.exports = app => {
     router.put("/:id", role.update);
     router.delete("/:id", role.delete);
     router.delete("/", role.deleteAll);
+    router.get("/rooms/:id", role.findRooms);
+    router.post("/rooms/:id", role.setRooms);
     app.use('/api/role', [authJwt.verifyToken], router);
 };
