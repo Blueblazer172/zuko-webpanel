@@ -115,24 +115,78 @@ exports.deleteAll = (req, res) => {
             });
         });
 };
+
 exports.roleRooms = (req, res) => {
     Role.findAll({
         include: [{
             model: Room
         }],
     }).then((roles) => {
-        let rolesRoomes = []
+        let rolesRoomes = [];
+
         roles.forEach((role) => {
-            let rooms = []
+            let rooms = [];
+
             role.dataValues.rooms.forEach((room) => {
                 rooms.push(room.dataValues.name)
-            })
+            });
+
             rolesRoomes.push({
                 id: role.id,
                 name: role.name,
                 rooms: rooms
-            })
-        })
+            });
+        });
+
         res.send(rolesRoomes)
     })
 };
+
+exports.findRooms = (req, res) => {
+    const id = req.params.id;
+
+    Role.findAll({
+        include: [{
+            model: Room
+        }],
+        where: {
+            id: id
+        }
+    }).then((role) => {
+        let rooms = [];
+
+        role[0].dataValues.rooms.forEach((room) => {
+            rooms.push(room.dataValues.name)
+        });
+
+        res.send(rooms);
+    })
+};
+
+exports.setRooms = (req, res) => {
+    const roleId = req.params.id;
+    const rooms = req.body.rooms;
+
+    Role.findByPk(roleId).then(async (role) => {
+        await role.setRooms([]);
+
+        rooms.forEach((room) => {
+            Room.findAll({
+                where: {
+                    name: room
+                },
+                raw: true
+            }).then(async(roomRole) => {
+                await role.addRooms([roomRole[0].id]);
+            });
+        });
+
+        res.send(rooms);
+    })
+        .catch((err) => {
+            console.log(err)
+            res.status(500).send({
+                message: "Error setting Rooms for Role with roleId=" + roleId
+            });
+        })
+}

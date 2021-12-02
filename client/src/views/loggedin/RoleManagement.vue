@@ -1,23 +1,15 @@
 <template>
-    <div class="container mt-3" v-if="user">
+    <div class="container mt-3" v-if="role">
         <div class="row">
             <div class="col">
                 <header>
-                    <h3>User Rollenzuweisung für
-                        <span class="badge-secondary">&nbsp;{{ user.email }}&nbsp;</span>
+                    <h3>Raumzuweisung für Rolle
+                        <span class="badge-secondary">&nbsp;{{role.name }}&nbsp;</span>
                     </h3>
                 </header>
             </div>
         </div>
         <form class="row g-3">
-            <div class="col-md-4">
-                <label for="roles" class="form-label">Rollen</label>
-                <div class="form-group">
-                    <select multiple class="form-control" id="roles" v-model="rolesSelected">
-                        <option v-for="role in roles" :key="role.id">{{ role.name }}</option>
-                    </select>
-                </div>
-            </div>
             <div class="col-md-4">
                 <label for="rooms" class="form-label">Räume</label>
                 <div class="form-group">
@@ -34,18 +26,16 @@
 </template>
 
 <script>
-import UserService from "../../services/user.service";
 import RoleService from "../../services/role.service";
 import RoomService from "../../services/room.service";
 
 export default {
-    name: "UserManagement",
+    name: "RoleManagement",
     data() {
         return {
             user: null,
             rooms: [],
-            roles: [],
-            rolesSelected: [],
+            role: [],
             roomsSelected: []
         };
     },
@@ -59,40 +49,27 @@ export default {
             return this.$router.push('/login');
         }
 
-        UserService.getUserInformation(this.$route.params.id).then(
-            (response) => {
-                this.user = response.data;
-            }
-        );
-
-        RoleService.getRoles().then(
-            (response) => {
-                this.roles = response.data;
-            }
-        );
-
         RoomService.getRooms().then(
             (response) => {
                 this.rooms = response.data;
             }
         );
 
-        UserService.getRoles(this.$route.params.id).then(
-            (response) => {
-                this.rolesSelected = response.data;
-            }
-        );
-
-        UserService.getRooms(this.$route.params.id).then(
+        RoleService.getRooms(this.$route.params.id).then(
             (response) => {
                 this.roomsSelected = response.data;
             }
-        );
+        )
+
+        RoleService.getRole(this.$route.params.id).then(
+            (response) => {
+                this.role = response.data;
+            }
+        )
     },
     methods: {
         update() {
-            UserService.setRooms(this.$route.params.id, this.roomsSelected);
-            UserService.setRoles(this.$route.params.id, this.rolesSelected);
+            RoleService.setRooms(this.$route.params.id, this.roomsSelected);
         }
     }
 };

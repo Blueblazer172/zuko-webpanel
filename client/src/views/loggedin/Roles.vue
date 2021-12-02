@@ -63,7 +63,7 @@ export default {
     },
     methods: {
         manageRole(id) {
-            return this.$router.push('/role/' + id);
+            return this.$router.push('/role/management/' + id);
         },
         createRole(newRoleName) {
             if (newRoleName) {

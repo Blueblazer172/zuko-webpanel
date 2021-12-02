@@ -59,7 +59,6 @@ class UserService {
             router.go(0);
         })
     }
-
 }
 
 export default new UserService();
