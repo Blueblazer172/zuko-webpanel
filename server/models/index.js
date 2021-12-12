@@ -5,17 +5,17 @@ const sequelize = new Sequelize(
     dbConfig.DB,
     dbConfig.USER,
     dbConfig.PASSWORD,
-{
-    host: dbConfig.HOST,
-    dialect: dbConfig.dialect,
-    operatorsAliases: false,
-    pool: {
-        max: dbConfig.pool.max,
-        min: dbConfig.pool.min,
-        acquire: dbConfig.pool.acquire,
-        idle: dbConfig.pool.idle
-    }
-});
+    {
+        host: dbConfig.HOST,
+        dialect: dbConfig.dialect,
+        operatorsAliases: false,
+        pool: {
+            max: dbConfig.pool.max,
+            min: dbConfig.pool.min,
+            acquire: dbConfig.pool.acquire,
+            idle: dbConfig.pool.idle
+        }
+    });
 
 const db = {};
 db.Sequelize = Sequelize;
@@ -25,6 +25,7 @@ db.user = require("./user.model.js")(sequelize, Sequelize);
 db.role = require("./role.model.js")(sequelize, Sequelize);
 db.log = require("./log.model.js")(sequelize, Sequelize);
 db.room = require("./room.model.js")(sequelize, Sequelize);
+db.userAccessRooms = require("./user-access-rooms.js")(sequelize, Sequelize);
 
 db.role.belongsToMany(db.user, {
     through: "user_roles",

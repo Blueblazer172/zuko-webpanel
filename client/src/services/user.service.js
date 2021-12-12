@@ -34,6 +34,18 @@ class UserService {
         return axios.get(`${process.env.VUE_APP_BACKEND}/api/user/rooms/` + id, {headers: authHeader()});
     }
 
+    getPermissionRequests() {
+        return axios.get(`${process.env.VUE_APP_BACKEND}/api/permission/requests/`, {headers: authHeader()});
+    }
+
+    ignoreRequest(id) {
+        return axios.delete(`${process.env.VUE_APP_BACKEND}/api/permission/request/` + id, {headers: authHeader()});
+    }
+
+    acceptRequest(id) {
+        return axios.put(`${process.env.VUE_APP_BACKEND}/api/permission/request/` + id, {headers: authHeader()});
+    }
+
     setRolesAndRooms(id, roles, rooms, diffRoles) {
         axios({
             url: `${process.env.VUE_APP_BACKEND}/api/user/role-rooms/` + id,
