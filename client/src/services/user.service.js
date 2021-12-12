@@ -34,26 +34,15 @@ class UserService {
         return axios.get(`${process.env.VUE_APP_BACKEND}/api/user/rooms/` + id, {headers: authHeader()});
     }
 
-    setRooms(id, rooms) {
+    setRolesAndRooms(id, roles, rooms, diffRoles) {
         axios({
-            url: `${process.env.VUE_APP_BACKEND}/api/user/rooms/` + id,
+            url: `${process.env.VUE_APP_BACKEND}/api/user/role-rooms/` + id,
             headers: authHeader(),
             method: 'POST',
             data: {
-                rooms: rooms
-            }
-        }).then(() => {
-            router.go(0);
-        })
-    }
-
-    setRoles(id, roles) {
-        axios({
-            url: `${process.env.VUE_APP_BACKEND}/api/user/roles/` + id,
-            headers: authHeader(),
-            method: 'POST',
-            data: {
-                roles: roles
+                roles: roles,
+                rooms: rooms,
+                diffRoles: diffRoles
             }
         }).then(() => {
             router.go(0);

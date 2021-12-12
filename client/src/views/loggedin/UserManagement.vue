@@ -46,6 +46,7 @@ export default {
             rooms: [],
             roles: [],
             rolesSelected: [],
+            rolesSelectedCopy: [],
             roomsSelected: []
         };
     },
@@ -80,6 +81,7 @@ export default {
         UserService.getRoles(this.$route.params.id).then(
             (response) => {
                 this.rolesSelected = response.data;
+                this.rolesSelectedCopy = response.data;
             }
         );
 
@@ -91,8 +93,13 @@ export default {
     },
     methods: {
         update() {
-            UserService.setRooms(this.$route.params.id, this.roomsSelected);
-            UserService.setRoles(this.$route.params.id, this.rolesSelected);
+            let diffRoles = this.rolesSelectedCopy.filter(x => !this.rolesSelected.includes(x));
+
+            if (diffRoles[0] === null) {
+                diffRoles = []
+            }
+
+            UserService.setRolesAndRooms(this.$route.params.id, this.rolesSelected, this.roomsSelected, diffRoles);
         }
     }
 };

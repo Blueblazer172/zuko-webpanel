@@ -100,6 +100,7 @@ exports.update = (req, res) => {
 
     let user = req.body;
 
+    // @TODO check dis
     if (req.body.password) {
         user = {...user, password: bcrypt.hashSync(req.body.password, 8)}
     }
@@ -289,54 +290,93 @@ exports.rooms = (req, res) => {
         });
 };
 
-exports.updateRooms = (req, res) => {
+exports.updateRolesRooms = (req, res) => {
     const id = req.params.id;
+    const roles = req.body.roles;
     const rooms = req.body.rooms;
+    // const diffRoles = req.body.diffRoles;
 
     User.findByPk(id).then(async (user) => {
         await user.setRooms([]);
-
-        rooms.forEach((room) => {
-            Room.findAll({
-                where: {
-                    name: room
-                },
-                raw: true
-            }).then(async (room) => {
-                await user.setRooms([room[0].id]);
-            });
-        });
-
-        res.send(rooms);
-    })
-        .catch(() => {
-            res.status(500).send({
-                message: "Error setting Rooms for User with id=" + id
-            });
-        });
-};
-
-exports.updateRoles = (req, res) => {
-    const id = req.params.id;
-    const roles = req.body.roles;
-
-    User.findByPk(id).then(async (user) => {
         await user.setRoles([]);
 
-        roles.forEach((role) => {
-            Role.findAll({
-                where: {
-                    name: role
-                },
-                raw: true
-            }).then(async (role) => {
-                await user.addRoles([role[0].id]);
+        if (rooms[0] !== null) {
+            if (rooms.length) {
+                rooms.forEach((room) => {
+                    Room.findAll({
+                        where: {
+                            name: room
+                        },
+                        raw: true
+                    }).then(async (room) => {
+                        await user.addRooms([room[0].id]);
+                    });
+                });
+            }
+        }
+
+        // console.log(diffRoles)
+        // if (diffRoles.length) {
+        //     diffRoles.forEach((diffRole) => {
+        //         Role.findAll({
+        //             where: {
+        //                 name: diffRole
+        //             },
+        //             raw: true
+        //         }).then(async (diffRole) => {
+        //             Role.findAll({
+        //                 where: {
+        //                     name: diffRole[0].name
+        //                 },
+        //                 include: [{
+        //                     model: Room
+        //                 }],
+        //                 raw: true
+        //             }).then((roleRooms) => {
+        //                 console.log(roleRooms)
+        //                 roleRooms.forEach(async (roleRoom) => {
+        //                     await user.removeRoom([roleRoom['rooms.id']]);
+        //                 });
+        //             })
+        //         });
+        //     });
+        // }
+
+        if (roles.length) {
+            roles.forEach((role) => {
+                Role.findAll({
+                    where: {
+                        name: role
+                    },
+                    raw: true
+                }).then(async (role) => {
+                    await user.addRoles([role[0].id]);
+
+                    Role.findAll({
+                        where: {
+                            name: role[0].name
+                        },
+                        include: [{
+                            model: Room
+                        }],
+                        raw: true
+                    }).then((roleRooms) => {
+                        roleRooms.forEach(async (roleRoom) => {
+                            if (roleRoom['rooms.name'] !== null) {
+                                if (rooms.indexOf(roleRoom['rooms.name']) === -1) {
+                                    await user.addRoom([roleRoom['rooms.id']]);
+                                }
+                            }
+                        });
+                    })
+                });
             });
-        });
+        }
 
         res.send(roles);
     })
-        .catch(() => {
+        .catch((err) => {
+            console.log(err)
             res.status(500).send({
                 message: "Error setting Rooms for User with id=" + id
             });
