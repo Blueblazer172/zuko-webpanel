@@ -48,6 +48,19 @@ class UserService {
             router.go(0);
         })
     }
+
+    updateUser(id, fields) {
+        axios({
+            url: `${process.env.VUE_APP_BACKEND}/api/user/` + id,
+            headers: authHeader(),
+            method: 'PUT',
+            data: {
+                fields
+            }
+        }).then(() => {
+            router.go(0);
+        })
+    }
 }
 
 export default new UserService();
