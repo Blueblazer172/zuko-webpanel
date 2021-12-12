@@ -26,6 +26,11 @@
                         <NavLink :href="href" @click="navigate">Räume</NavLink>
                     </li>
                 </router-link>
+                <router-link v-if="showAdminBoard" v-slot="{href,navigate, isActive}" to="/requests" class="nav-item">
+                    <li :class="isActive ? 'nav-link active' : 'nav-link'">
+                        <NavLink :href="href" @click="navigate">Anfragen</NavLink>
+                    </li>
+                </router-link>
             </div>
 
             <div v-if="!currentUser" class="navbar-nav ml-auto">
