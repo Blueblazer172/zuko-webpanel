@@ -43,7 +43,11 @@ class UserService {
     }
 
     acceptRequest(id) {
-        return axios.put(`${process.env.VUE_APP_BACKEND}/api/permission/request/` + id, {headers: authHeader()});
+        return axios({
+            url: `${process.env.VUE_APP_BACKEND}/api/permission/request/` + id,
+            headers: authHeader(),
+            method: 'PUT',
+        })
     }
 
     setRolesAndRooms(id, roles, rooms, diffRoles) {

@@ -187,7 +187,7 @@ exports.findLogs = (req, res) => {
         where: {
             id: id
         },
-        raw: true
+        raw: true,
     })
         .then(data => {
             if (data) {

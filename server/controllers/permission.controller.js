@@ -11,80 +11,64 @@ exports.checkPermission = (req, res) => {
     const id = parseInt(req.body.id);
     const roomName = req.body.room;
 
-    Room.findAll({
-        where: {
-            name: roomName,
-        },
-        raw: true,
-        attributes: {
-            include: [["name", "RoomName"]],
-            exclude: ["name", "createdAt", "updatedAt"],
-        },
-        include: {
-            model: Role,
-            required: true,
-            attributes: {
-                include: [["name", "RoleName"]],
-                exclude: ["name", "createdAt", "updatedAt"],
-            },
-            include: {
-                model: User,
-                attributes: {
-                    include: [["name", "UserName"]],
-                    exclude: [
-                        "username",
-                        "email",
-                        "password",
-                        "createdAt",
-                        "updatedAt",
-                    ],
-                },
-                where: {
-                    id: id,
-                },
-            },
-        },
-    })
-        .then((user) => {
-            if (roomName == "102") {
-                device = "http://192.168.178.89:4444/toggle"
-            } else {
-                device = "http://192.168.178.94:8080/user"
-            }
-            if (user.length > 0) {
-                axios({
-                    method: "post",
-                    url: device,
-                    data: user,
-                })
-                    .then(() => {
-                        Log.create().then((log) => {
-                            User.findByPk(id).then((user) => {
-                                log.setUsers([user.id]);
-                            });
+    if (roomName == "102") {
+        device = "http://192.168.178.89:4444/toggle"
+    } else {
+        device = "http://192.168.178.94:8080/user"
+    }
 
-                            Room.findOne({where: {name: roomName}}).then((room) => {
-                                log.setRooms([room.id]);
-                            });
-                        })
-                        res.send("Permission granted");
+    User.findByPk(id)
+        .then(async (user) => {
+            if (user) {
+                let rooms = await user.getRooms({raw: true})
+                const permission = rooms.filter(x => x.name === roomName)
+                if (permission.length > 0){
+
+                    userData = {
+                        userName: user.name,
+                        roomName: roomName
+                    }
+
+                    axios({
+                        method: "post",
+                        url: device,
+                        data: userData,
                     })
-                    .catch(function (error) {
-                        res.status(404).send({
-                            message: "Endpoint device unreachable",
+                        .then(() => {
+                            Log.create().then((log) => {
+                                log.setUsers([user.id])
+                                log.setRooms([permission[0].id])
+                            })
+                            res.send("Permission granted");
+                        })
+                        .catch(function (error) {
+                            res.status(404).send({
+                                message: "Endpoint device unreachable",
+                            });
                         });
-                    });
+                } else {
+                    // TODO only send if devices with screen
+                    if (roomName != "102") {
+                        axios({
+                            method: "post",
+                            url: device,
+                        })
+                        .then(()=> {
+                            res.send("Permission denied");
+                        })
+                        .catch(function (error) {
+                            res.status(404).send({
+                                message: "Endpoint device unreachable",
+                            });
+                        });
+                    } else {
+                        res.send("Permission denied");
+                    }
+                }
             } else {
-                axios({
-                    method: "post",
-                    url: device,
-                })
-                    .catch(function (error) {
-                        res.status(404).send({
-                            message: "Endpoint device unreachable",
-                        });
-                    });
-                res.send("Permission denied");
+                res.status(404).send({
+                    message: "Error fetching permissions for user: " + id,
+                });
             }
         })
         .catch(() => {
