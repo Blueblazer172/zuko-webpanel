@@ -18,29 +18,52 @@
                 <h3>Rollen</h3>
             </div>
         </div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Id</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Räume</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="rolerow" v-for="role in roles" :key="role.id" @click="manageRole(role.id)">
-                    <th scope="row">{{ role.id }}</th>
-                    <td>{{ role.name }}</td>
-                    <td>{{ (role.rooms.join(',').length !== 0) ? role.rooms.join(',') : "Keine Räume" }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Räume</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="rolerow hovering-highlight" v-for="role in roles" :key="role.id" @click="manageRole(role.id)">
+                            <th scope="row">{{ role.id }}</th>
+                            <td>{{ role.name }}</td>
+                            <td>{{ (role.rooms.join(',').length !== 0) ? role.rooms.join(',') : "Keine Räume" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-1">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="rolerow" v-for="role in roles" :key="role.id">
+                        <td>
+                            <button class="btn-sm btn-danger" @click="deleteRole(role.id)">Löschen</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </template>
 
 <style scoped>
-.rolerow:hover {
+.hovering-highlight:hover {
     background-color: lightgrey;
     cursor: pointer;
+}
+.rolerow td, .table tr th {
+    line-height: 40px;
 }
 </style>
 
@@ -70,6 +93,9 @@ export default {
                 newRoleName = newRoleName.toLowerCase();
                 RoleService.createRole(newRoleName);
             }
+        },
+        deleteRole(roleId) {
+            RoleService.deleteRole(roleId)
         }
     }
 };

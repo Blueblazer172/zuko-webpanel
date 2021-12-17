@@ -40,6 +40,16 @@ class RoleService {
             router.go(0);
         })
     }
+
+    deleteRole(roleId) {
+        axios({
+            url: `${process.env.VUE_APP_BACKEND}/api/role/` + roleId,
+            headers: authHeader(),
+            method: 'DELETE',
+        }).then(() => {
+            router.go(0);
+        })
+    }
 }
 
 export default new RoleService();
