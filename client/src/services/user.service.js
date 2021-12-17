@@ -77,6 +77,16 @@ class UserService {
             router.go(0);
         })
     }
+
+    deleteUser(userId) {
+        axios({
+            url: `${process.env.VUE_APP_BACKEND}/api/user/` + userId,
+            headers: authHeader(),
+            method: 'DELETE',
+        }).then(() => {
+            router.go(0);
+        })
+    }
 }
 
 export default new UserService();

@@ -1,5 +1,5 @@
 module.exports = app => {
-    const { authJwt } = require("../middleware");
+    const {authJwt} = require("../middleware");
     const user = require("../controllers/user.controller.js");
 
     app.use((req, res, next) => {
@@ -11,15 +11,6 @@ module.exports = app => {
     });
 
     app.get("/api/test/all", user.allAccess);
-
-    app.get('/api/test/admin',
-        [authJwt.verifyToken, authJwt.isAdmin],
-        user.adminBoard
-    );
-
-    app.get(
-        "/api/test/user",
-        [authJwt.verifyToken],
-        user.userBoard
-    );
+    app.get('/api/test/admin', [authJwt.verifyToken, authJwt.isAdmin], user.adminBoard);
+    app.get("/api/test/user", [authJwt.verifyToken], user.userBoard);
 };

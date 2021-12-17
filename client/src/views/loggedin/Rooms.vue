@@ -16,27 +16,51 @@
             </div>
             <div class="col-3" v-if="isEdit">
                 <label class="form-label">&nbsp;</label>
-                <button class="btn btn-danger form-control" @click="deleteRoom(this.selectedRoom)">Löschen</button>
+                <button class="btn btn-danger form-control" @click="deleteRoom(this.selectedRoom.id)">Löschen</button>
             </div>
             <div class="col-12 mt-3">
                 <hr>
                 <h3>Räume</h3>
             </div>
         </div>
-        <table class="table" id="table">
-            <thead>
-            <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Name</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="roomsrows" v-for="room in rooms" :key="room.id" @click="updateRoom(room)" :id="room.id">
-                <th scope="row">{{ room.id }}</th>
-                <td>{{ room.name }}</td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col">
+                <table class="table" id="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">QR-Code</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="roomsrows hovering-highlight" v-for="room in rooms" :key="room.id" @click="updateRoom(room)" :id="room.id">
+                        <th scope="row">{{ room.id }}</th>
+                        <td>{{ room.name }}</td>
+                        <td>
+                            <qrcode-vue :value="JSON.stringify({'room': (room.name).toString()})" :size="70" level="H" render-as="svg" />
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-3">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="roomsrows" v-for="room in rooms" :key="room.id" :id="room.id">
+                        <td>
+                            <button class="btn btn-danger" @click="deleteRoom(room.id)">Löschen</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -46,17 +70,22 @@
     cursor: pointer;
 }
 
-.roomsrows:hover {
+.hovering-highlight:hover {
     background-color: lightgrey;
     cursor: pointer;
+}
+.roomsrows td, .table tr th {
+    line-height: 80px;
 }
 </style>
 
 <script>
 import RoomService from "../../services/room.service";
+import QrcodeVue from 'qrcode.vue';
 
 export default {
     name: "Rooms",
+    components: {QrcodeVue},
     data() {
         return {
             rooms: null,
@@ -93,8 +122,8 @@ export default {
             }
 
         },
-        deleteRoom(room) {
-            RoomService.deleteRoom(room.id);
+        deleteRoom(roomId) {
+            RoomService.deleteRoom(roomId);
         },
         editRoom(room) {
             RoomService.updateRoom(room.id, this.$refs.room.value);
