@@ -15,8 +15,13 @@
                 <button v-else class="btn btn-primary form-control" @click="editRoom(this.selectedRoom)">Bearbeiten</button>
             </div>
             <div class="col-3" v-if="isEdit">
-                <label class="form-label">&nbsp;</label>
+                <label class="form-label">&nbsp;</label><br>
                 <button class="btn btn-danger form-control" @click="deleteRoom(this.selectedRoom.id)">Löschen</button>
+            </div>
+            <div class="col-12 mt-3" v-if="isEdit">
+                <hr>
+                <h3>QR Code</h3>
+                <qrcode-vue id="qrblock" ref="qrcode" :value="JSON.stringify({'room': (this.selectedRoom.name).toString()})" :size="100" level="H" render-as="svg" />
             </div>
             <div class="col-12 mt-3">
                 <hr>
@@ -30,21 +35,17 @@
                     <tr>
                         <th scope="col">Id</th>
                         <th scope="col">Name</th>
-                        <th scope="col">QR-Code</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr class="roomsrows hovering-highlight" v-for="room in rooms" :key="room.id" @click="updateRoom(room)" :id="room.id">
-                        <th scope="row">{{ room.id }}</th>
-                        <td>{{ room.name }}</td>
-                        <td>
-                            <qrcode-vue :value="JSON.stringify({'room': (room.name).toString()})" :size="70" level="H" render-as="svg" />
-                        </td>
-                    </tr>
+                        <tr class="roomsrows hovering-highlight" v-for="room in rooms" :key="room.id" @click="updateRoom(room)" :id="room.id">
+                            <th scope="row">{{ room.id }}</th>
+                            <td>{{ room.name }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="col-3">
+            <div v-if="isEdit" class="col-3">
                 <table class="table">
                     <thead>
                     <tr>
@@ -52,15 +53,16 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr class="roomsrows" v-for="room in rooms" :key="room.id" :id="room.id">
-                        <td>
-                            <button class="btn btn-danger" @click="deleteRoom(room.id)">Löschen</button>
-                        </td>
-                    </tr>
+                        <tr class="roomsrows" v-for="room in rooms" :key="room.id" :id="room.id">
+                            <td v-if="this.selectedRoom.name === room.name">
+                                <button class="btn btn-primary" @click="donwloadQR()">Download QR Code</button>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+        <canvas style="display: none" id="canvas"></canvas>
     </div>
 </template>
 
@@ -133,6 +135,45 @@ export default {
                 newRoomName = newRoomName.toLowerCase();
                 RoomService.createRoom(newRoomName);
             }
+        },
+        triggerDownload(imgURI) {
+            var evt = new MouseEvent('click', {
+                view: window,
+                bubbles: false,
+                cancelable: true
+            });
+
+            var a = document.createElement('a');
+            a.setAttribute('download', 'room_' + this.selectedRoom.name + '_qrcode.png');
+            a.setAttribute('href', imgURI);
+            a.setAttribute('target', '_blank');
+
+            a.dispatchEvent(evt);
+        },
+        donwloadQR() {
+            let svg = document.querySelector('#qrblock');
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            var data = (new XMLSerializer()).serializeToString(svg);
+            var DOMURL = window.URL || window.webkitURL || window;
+
+            var img = new Image();
+            var svgBlob = new Blob([data], {type: 'image/svg+xml;charset=utf-8'});
+            var url = DOMURL.createObjectURL(svgBlob);
+            let that = this;
+
+            img.onload = function () {
+                ctx.drawImage(img, 0, 0);
+                DOMURL.revokeObjectURL(url);
+
+                var imgURI = canvas
+                    .toDataURL('image/png')
+                    .replace('image/png', 'image/octet-stream');
+
+                that.triggerDownload(imgURI);
+            };
+
+            img.src = url;
         }
     }
 };

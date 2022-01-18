@@ -225,7 +225,7 @@ exports.findLogs = (req, res) => {
 };
 
 exports.allAccess = (req, res) => {
-    res.status(200).send("Dieser Text ist für alle sichtbar.");
+    res.status(200).send("Herzlich Willkommen zu unserer Präsentation :)");
 };
 
 exports.userBoard = (req, res) => {

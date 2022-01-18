@@ -30,6 +30,34 @@
                 <button class="btn btn-primary" @click="update" type="submit">Aktualisieren</button>
             </div>
         </form>
+        <br>
+        <br>
+        <div class="row mt-3">
+            <div class="col" v-if="logs[0].created !== null">
+                <header>
+                    <h3>User History</h3>
+                </header>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Zeit</th>
+                            <th scope="col">Raum</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        <tr class="rolerow hovering-highlight" v-for="log in logs.reverse()" :key="log.id">
+                            <th scope="row">{{ moment(log.created).format('DD.MM.YYYY [&nbsp;] HH:mm') }}</th>
+                            <td>{{ log.roomName }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div v-else class="col">
+                <header>
+                    <h3>Keine History</h3>
+                </header>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -37,6 +65,7 @@
 import UserService from "../../services/user.service";
 import RoleService from "../../services/role.service";
 import RoomService from "../../services/room.service";
+import moment from 'moment';
 
 export default {
     name: "UserManagement",
@@ -45,6 +74,7 @@ export default {
             user: null,
             rooms: [],
             roles: [],
+            logs: [],
             rolesSelected: [],
             rolesSelectedCopy: [],
             roomsSelected: []
@@ -54,6 +84,9 @@ export default {
         currentUser() {
             return this.$store.state.auth.user;
         }
+    },
+    created: function () {
+        this.moment = moment;
     },
     mounted() {
         if (!this.currentUser) {
@@ -88,6 +121,12 @@ export default {
         UserService.getRooms(this.$route.params.id).then(
             (response) => {
                 this.roomsSelected = response.data;
+            }
+        );
+
+        UserService.getLogs(this.$route.params.id).then(
+            (response) => {
+                this.logs = response.data;
             }
         );
     },
