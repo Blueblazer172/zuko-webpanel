@@ -27,36 +27,29 @@
                 </div>
             </div>
             <div class="col-12 mt-3">
-                <button class="btn btn-primary" @click="update" type="submit">Aktualisieren</button>
+                <button class="btn btn-primary" @click="update()" type="submit">Aktualisieren</button>
             </div>
         </form>
         <br>
         <br>
         <div class="row mt-3">
-            <div class="col" v-if="logs[0].created !== null">
-                <header>
-                    <h3>User History</h3>
-                </header>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Zeit</th>
-                            <th scope="col">Raum</th>
-                        </tr>
-                    </thead>
-                    <tbody >
-                        <tr class="rolerow hovering-highlight" v-for="log in logs.reverse()" :key="log.id">
-                            <th scope="row">{{ moment(log.created).format('DD.MM.YYYY [&nbsp;] HH:mm') }}</th>
-                            <td>{{ log.roomName }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div v-else class="col">
-                <header>
-                    <h3>Keine History</h3>
-                </header>
-            </div>
+            <header>
+                <h3>User History</h3>
+            </header>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Zeit</th>
+                        <th scope="col">Raum</th>
+                    </tr>
+                </thead>
+                <tbody v-if="logs[0].roomName">
+                    <tr class="rolerow hovering-highlight" v-for="log in logs.reverse()" :key="log.id">
+                        <th scope="row">{{ moment(log.created).format('DD.MM.YYYY [&nbsp;] HH:mm') }}</th>
+                        <td>{{ log.roomName }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>
